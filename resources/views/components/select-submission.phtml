@@ -1,0 +1,37 @@
+<?php
+
+use Fisharebest\Webtrees\Http\RequestHandlers\TomSelectSubmission;
+use Fisharebest\Webtrees\Submission;
+use Fisharebest\Webtrees\Tree;
+
+/**
+ * @var string          $at "@" or "" (or unset).
+ * @var Submission|null $submission
+ * @var string|null     $class
+ * @var string|null     $id
+ * @var string          $name
+ * @var Tree            $tree
+ */
+
+$at = $at ?? '';
+
+?>
+
+<select
+    autocomplete="off"
+    class="form-select tom-select <?= $class ?? '' ?>"
+    data-ajax-type="POST"
+    data-ajax--url="<?= e(route(TomSelectSubmission::class, ['tree' => $tree->name(), 'at' => $at])) ?>"
+    id="<?= e($id ?? $name) ?>"
+    name="<?= e($name) ?>"
+    <?= ($disabled ?? false) ? 'disabled="disabled"' : '' ?>
+    <?= ($required ?? false) ? 'required="required"' : '' ?>
+>
+    <?php if (($submission ?? null) instanceof Submission) : ?>
+        <option value="<?= e($at . $submission->xref() . $at) ?>">
+            <?= view('selects/submission', ['submission' => $submission]) ?>
+        </option>
+    <?php else : ?>
+        <option value="">&nbsp;</option>
+    <?php endif ?>
+</select>

@@ -1,0 +1,36 @@
+<?php
+
+use Fisharebest\Webtrees\Http\RequestHandlers\TomSelectNote;
+use Fisharebest\Webtrees\Note;
+use Fisharebest\Webtrees\Tree;
+
+/**
+ * @var string      $at     "@" or "" (or unset).
+ * @var Note|null   $note
+ * @var string|null $class
+ * @var string|null $id
+ * @var string      $name
+ * @var Tree        $tree
+ */
+
+$at = $at ?? '';
+
+?>
+
+<select
+    autocomplete="off"
+    class="form-select tom-select <?= $class ?? '' ?>"
+    data-url="<?= e(route(TomSelectNote::class, ['tree' => $tree->name(), 'at' => $at])) ?>"
+    id="<?= e($id ?? $name) ?>"
+    name="<?= e($name) ?>"
+    <?= ($disabled ?? false) ? 'disabled="disabled"' : '' ?>
+    <?= ($required ?? false) ? 'required="required"' : '' ?>
+>
+    <?php if (($note ?? null) instanceof Note) : ?>
+        <option value="<?= e($at . $note->xref() . $at) ?>">
+            <?= view('selects/note', ['note' => $note]) ?>
+        </option>
+    <?php else : ?>
+        <option value="">&nbsp;</option>
+    <?php endif ?>
+</select>

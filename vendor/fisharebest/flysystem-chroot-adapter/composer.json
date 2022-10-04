@@ -1,0 +1,33 @@
+{
+    "name": "fisharebest/flysystem-chroot-adapter",
+    "description": "Creates a filesystem from a sub-folder in another filesystem.",
+    "keywords": [
+        "flysystem",
+        "chroot",
+        "adapter"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/fisharebest/flysystem-chroot-adapter",
+    "authors": [
+        {
+            "name": "Greg Roach",
+            "email": "greg@subaqua.co.uk",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "league/flysystem": "~2.0"
+    },
+    "require-dev": {
+        "league/flysystem-memory": "^2.0",
+        "league/flysystem-adapter-test-utilities": "~2.0",
+        "phpunit/phpunit": "~9.5",
+        "php-coveralls/php-coveralls": "~2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fisharebest\\Flysystem\\Adapter\\": "src/"
+        }
+    }
+}

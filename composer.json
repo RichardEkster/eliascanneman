@@ -1,0 +1,190 @@
+{
+    "name": "fisharebest/webtrees",
+    "description": "webtrees online genealogy",
+    "keywords": [
+        "webtrees",
+        "genealogy"
+    ],
+    "license": "GPL-3.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "Fisharebest\\Webtrees\\": "app/"
+        },
+        "files": [
+            "app/Helpers/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/TestCase.php",
+            "tests/MockGlobalFunctions.php"
+        ]
+    },
+    "config": {
+        "platform": {
+            "php": "7.4"
+        },
+        "sort-packages": true,
+        "process-timeout": 3600
+    },
+    "require": {
+        "php": "7.4 - 8.1",
+        "ext-ctype": "*",
+        "ext-curl": "*",
+        "ext-exif": "*",
+        "ext-fileinfo": "*",
+        "ext-gd": "*",
+        "ext-iconv": "*",
+        "ext-intl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-pcre": "*",
+        "ext-pdo": "*",
+        "ext-session": "*",
+        "ext-simplexml": "*",
+        "ext-xml": "*",
+        "aura/router": "3.2.0",
+        "doctrine/dbal": "3.3.7",
+        "ezyang/htmlpurifier": "4.14.0",
+        "fig/http-message-util": "1.1.5",
+        "fisharebest/algorithm": "1.6.0",
+        "fisharebest/ext-calendar": "2.6.0",
+        "fisharebest/flysystem-chroot-adapter": "2.0.0",
+        "fisharebest/localization": "1.16.0",
+        "guzzlehttp/guzzle": "7.4.5",
+        "illuminate/container": "8.83.18",
+        "illuminate/database": "8.83.18",
+        "illuminate/support": "8.83.18",
+        "intervention/image": "2.7.2",
+        "io-developer/php-whois": "4.1.7",
+        "league/commonmark": "2.3.3",
+        "league/flysystem": "2.4.5",
+        "league/flysystem-ziparchive": "2.3.1",
+        "middlewares/client-ip": "2.0.1",
+        "mlocati/ip-lib": "1.18.0",
+        "nesbot/carbon": "2.59.1",
+        "nyholm/psr7": "1.5.1",
+        "nyholm/psr7-server": "1.0.2",
+        "oscarotero/middleland": "1.0.1",
+        "psr/cache": "1.0.1",
+        "psr/http-message": "1.0.1",
+        "psr/http-server-handler": "1.0.1",
+        "psr/http-server-middleware": "1.0.1",
+        "ramsey/uuid": "4.2.3",
+        "sabre/vobject": "4.4.2",
+        "symfony/cache": "5.4.10",
+        "symfony/expression-language": "5.4.10",
+        "symfony/mailer": "5.4.10",
+        "symfony/polyfill-mbstring": "1.26.0",
+        "symfony/polyfill-php80": "1.26.0",
+        "tecnickcom/tcpdf": "6.4.4"
+    },
+    "require-dev": {
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-pdo_sqlite": "*",
+        "ext-sqlite3": "*",
+        "composer/composer": "2.3.9",
+        "league/flysystem-memory": "2.0.6",
+        "php-coveralls/php-coveralls": "2.5.2",
+        "phpunit/phpunit": "9.5.21"
+    },
+    "suggest": {
+        "ext-imagick": "Required to generate thumbnail images",
+        "ext-pdo_mysql": "Required to use MySQL for database storage",
+        "ext-pdo_sqlite": "Required to use SQLite for database storage",
+        "ext-pdo_pgsql": "Required to use PostgreSQL for database storage",
+        "ext-pdo_sqlsvr": "Required to use SQL Server for database storage",
+        "ext-zip": "Required to compress downloads and use the upgrade wizard",
+        "ext-zlib": "Required to compress HTTP responses"
+    },
+    "scripts": {
+        "webtrees:build": [
+            "rm -Rf webtrees/",
+            "git archive --prefix=webtrees/ HEAD --format=tar | tar -x",
+            "@composer install --no-dev --quiet",
+            "cp -r vendor/ webtrees/vendor/",
+            "@composer webtrees:lang",
+            "for FILE in resources/lang/*/messages.php; do cp $FILE webtrees/$FILE; done",
+            "zip --quiet --recurse-paths --move -9 webtrees-`git describe`.zip webtrees"
+        ],
+        "webtrees:pre-commit-hook": [
+            "@composer webtrees:phpcs",
+            "@composer webtrees:phpstan",
+            "@composer webtrees:test"
+        ],
+        "webtrees:check": [
+            "### PHP-CODE-SNIFFER",
+            "@composer webtrees:phpcs",
+            "### PHPSTAN",
+            "@composer webtrees:phpstan",
+            "### PSALM",
+            "@composer webtrees:psalm"
+        ],
+        "webtrees:phpcs": [
+            "@composer global require squizlabs/php_codesniffer=* --quiet",
+            "~/.composer/vendor/bin/phpcs --standard=PSR12 --colors --extensions=php --exclude=Generic.Files.LineLength index.php app tests",
+            "~/.composer/vendor/bin/phpcs --colors --extensions=css resources/css"
+        ],
+        "webtrees:phpstan": [
+            "@composer global require --quiet phpstan/phpstan=*",
+            "@composer global require --quiet phpstan/extension-installer=*",
+            "@composer global require --quiet phpstan/phpstan-deprecation-rules=*",
+            "@composer global require --quiet phpstan/phpstan-strict-rules=*",
+            "@composer global require --quiet phpstan/phpstan-phpunit=*",
+            "@composer install --quiet",
+            "~/.composer/vendor/bin/phpstan analyze --memory-limit=-1 --level=max index.php app",
+            "@composer install --no-dev --quiet"
+        ],
+        "webtrees:phpstan-baseline": [
+            "@composer global require --quiet phpstan/phpstan=*",
+            "@composer global require --quiet phpstan/extension-installer=*",
+            "@composer global require --quiet phpstan/phpstan-deprecation-rules=*",
+            "@composer global require --quiet phpstan/phpstan-strict-rules=*",
+            "@composer global require --quiet phpstan/phpstan-phpunit=*",
+            "@composer install --quiet",
+            "~/.composer/vendor/bin/phpstan analyze --level=max --generate-baseline=phpstan-baseline.neon index.php app",
+            "@composer install --no-dev --quiet"
+        ],
+        "webtrees:psalm": [
+            "@composer global require --quiet vimeo/psalm",
+            "@composer install --quiet",
+            "~/.composer/vendor/bin/psalm --threads=8 --php-version=8.1",
+            "@composer install --no-dev --quiet"
+        ],
+        "webtrees:test": [
+            "@composer install --quiet",
+            "@php vendor/bin/phpunit",
+            "@composer install --no-dev --quiet"
+        ],
+        "webtrees:coverage": [
+            "@composer install --dev --quiet",
+            "vendor/bin/phpunit --coverage-html=tests/coverage",
+            "@composer install --no-dev --quiet"
+        ],
+        "webtrees:lang": [
+            "Fisharebest\\Webtrees\\Console\\ComposerScripts::languageFiles"
+        ],
+        "webtrees:missing-tests": [
+            "Fisharebest\\Webtrees\\Console\\ComposerScripts::missingTests"
+        ],
+        "webtrees:po": [
+            "sed -i.bak -e 's/\\(I18N::[^)]*[)]\\)/<?php echo \\1; ?>/g' resources/xml/reports/*.xml",
+            "git grep -I --name-only --fixed-strings -e I18N:: -- '*.php' '*.phtml' '*.xml' | xargs xgettext --package-name=webtrees --package-version=1.0 --msgid-bugs-address=i18n@webtrees.net --output=resources/lang/webtrees.pot --no-wrap --language=PHP --add-comments=I18N --from-code=utf-8 --keyword --keyword=translate:1 --keyword=translateContext:1c,2 --keyword=plural:1,2",
+            "find resources/xml/reports/ -name '*.xml' -exec mv {}.bak {} \\;",
+            "find resources/lang -name '*.po' -exec msgmerge --no-wrap --sort-output --no-fuzzy-matching --quiet --output={} {} resources/lang/webtrees.pot \\;"
+        ],
+        "webtrees:png": [
+            "find resources/css -name *.png -exec pngquant --ext .png --force --skip-if-larger --speed 1 {} \\;",
+            "find resources/css -name *.png -exec pngcrush -rem allb -brute -reduce {} {} \\;",
+            "find resources/css -name *.png -exec optipng -o7 -zm1-9 {} \\;"
+        ]
+    },
+    "scripts-descriptions": {
+        "webtrees:build": "Create a distribution file (webtrees.zip)",
+        "webtrees:check": "Run various static analysis tools",
+        "webtrees:coverage": "Generate test coverage report",
+        "webtrees:lang": "Compile the language files (messages.php)",
+        "webtrees:po": "Update the language (webtrees.pot, *.po)"
+    }
+}
